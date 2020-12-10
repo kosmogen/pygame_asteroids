@@ -1,4 +1,5 @@
 import pygame
+import math
 from pygame.locals import *
 
 class Ship(pygame.sprite.Sprite):
@@ -30,18 +31,18 @@ class Ship(pygame.sprite.Sprite):
 
         # Update velocity and atitude from keypresses
         if pressed_keys[K_UP]:
-            # self.y_velocity = self.y_velocity - 0.5
+            self.y_velocity = self.y_velocity - 0.25 * math.sin(math.radians(self.angle))
+            self.x_velocity = self.x_velocity + 0.25 * math.cos(math.radians(self.angle))
             pass
         if pressed_keys[K_DOWN]:
-            # self.y_velocity = self.y_velocity + 0.5
+            self.y_velocity = self.y_velocity + 0.25 * math.sin(math.radians(self.angle))
+            self.x_velocity = self.x_velocity - 0.25 * math.cos(math.radians(self.angle))
             pass
         if pressed_keys[K_LEFT]:
-            # self.x_velocity = self.x_velocity - 0.5
             self.angle = self.angle + 1
             self.display_image = pygame.transform.rotate(self.image, self.angle)
             self.rect = self.display_image.get_rect()
         if pressed_keys[K_RIGHT]:
-            # self.x_velocity = self.x_velocity + 0.5
             self.angle = self.angle - 1
             self.display_image = pygame.transform.rotate(self.image, self.angle)
             self.rect = self.display_image.get_rect()
@@ -52,14 +53,14 @@ class Ship(pygame.sprite.Sprite):
         self.y_pos = self.y_pos + self.y_velocity
 
         # Make sure the ship wraps around when it reaches the edge of the screen
-        if self.x_velocity > 0 and self.rect.left > self.screen_width:
+        if self.x_velocity > 0 and self.x_pos > self.screen_width:
             self.x_pos = self.x_pos - self.screen_width
 
-        if self.x_velocity < 0 and self.rect.right < 0:
+        if self.x_velocity < 0 and self.x_pos + 25 < 0:
             self.x_pos = self.x_pos + self.screen_width
 
-        if self.y_velocity > 0 and self.rect.bottom > self.screen_height:
+        if self.y_velocity > 0 and self.y_pos > self.screen_height:
             self.y_pos = self.y_pos - self.screen_height
 
-        if self.y_velocity < 0 and self.rect.top < 0:
+        if self.y_velocity < 0 and self.y_pos + 25 < 0:
             self.y_pos = self.y_pos + self.screen_height
