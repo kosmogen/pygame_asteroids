@@ -14,7 +14,7 @@ if __name__ == '__main__':
     DISPLAYSURF = pygame.display.set_mode(WINDOW_RES)
 
     # fixed sprites
-    player_ship = Ship(640, 480)
+    player_ship = Ship(*WINDOW_RES)
     player_ship.update()
 
     # main loop

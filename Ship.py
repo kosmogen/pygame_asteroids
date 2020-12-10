@@ -11,11 +11,11 @@ class Ship(pygame.sprite.Sprite):
         pygame.draw.line(self.image, (0, 255, 0), (49, 25), (1, 49))
         pygame.draw.line(self.image, (0, 255, 0), (1, 1), (1, 49))
         
-        self.x_pos = screen_width/2
-        self.y_pos = screen_height/2
+        self.x_pos = screen_width/2 - 25
+        self.y_pos = screen_height/2 - 25
         self.y_velocity = 0
         self.x_velocity = 0
-        self.angle = 0
+        self.angle = 90
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.display_image = pygame.transform.rotate(self.image, self.angle)
