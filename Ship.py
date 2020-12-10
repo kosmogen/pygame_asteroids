@@ -7,45 +7,59 @@ class Ship(pygame.sprite.Sprite):
         super().__init__() 
         self.image = pygame.Surface([50, 50])
         self.image.fill((0, 0, 0))
-        pygame.draw.line(self.image, (0, 255, 0), (0, 50), (25, 0))
-        pygame.draw.line(self.image, (0, 255, 0), (25, 0), (50, 50))
-        pygame.draw.line(self.image, (0, 255, 0), (49, 49), (0, 49))
-        self.rect = self.image.get_rect()
-        self.rect.move_ip(screen_width/2, screen_height/2)
+        pygame.draw.line(self.image, (0, 255, 0), (1, 1), (49, 25))
+        pygame.draw.line(self.image, (0, 255, 0), (49, 25), (1, 49))
+        pygame.draw.line(self.image, (0, 255, 0), (1, 1), (1, 49))
+        
+        self.x_pos = screen_width/2
+        self.y_pos = screen_height/2
         self.y_velocity = 0
         self.x_velocity = 0
+        self.angle = 0
         self.screen_width = screen_width
         self.screen_height = screen_height
+        self.display_image = pygame.transform.rotate(self.image, self.angle)
+
+        self.rect = self.display_image.get_rect()
 
     def draw(self, surface):
-        surface.blit(self.image, self.rect) 
+        surface.blit(self.display_image, (self.x_pos, self.y_pos)) 
 
     def update_keys(self):
         pressed_keys = pygame.key.get_pressed()
 
         # Update velocity and atitude from keypresses
         if pressed_keys[K_UP]:
-            self.y_velocity = self.y_velocity - 0.5
+            # self.y_velocity = self.y_velocity - 0.5
+            pass
         if pressed_keys[K_DOWN]:
-            self.y_velocity = self.y_velocity + 0.5
+            # self.y_velocity = self.y_velocity + 0.5
+            pass
         if pressed_keys[K_LEFT]:
-            self.x_velocity = self.x_velocity - 0.5
+            # self.x_velocity = self.x_velocity - 0.5
+            self.angle = self.angle + 1
+            self.display_image = pygame.transform.rotate(self.image, self.angle)
+            self.rect = self.display_image.get_rect()
         if pressed_keys[K_RIGHT]:
-            self.x_velocity = self.x_velocity + 0.5
+            # self.x_velocity = self.x_velocity + 0.5
+            self.angle = self.angle - 1
+            self.display_image = pygame.transform.rotate(self.image, self.angle)
+            self.rect = self.display_image.get_rect()
 
     def update_sprite(self):
         # Update sprite position
-        self.rect.move_ip(self.x_velocity, self.y_velocity)
+        self.x_pos = self.x_pos + self.x_velocity
+        self.y_pos = self.y_pos + self.y_velocity
 
         # Make sure the ship wraps around when it reaches the edge of the screen
         if self.x_velocity > 0 and self.rect.left > self.screen_width:
-            self.rect.move_ip(-self.screen_width, 0)
+            self.x_pos = self.x_pos - self.screen_width
 
         if self.x_velocity < 0 and self.rect.right < 0:
-            self.rect.move_ip(self.screen_width, 0)
+            self.x_pos = self.x_pos + self.screen_width
 
         if self.y_velocity > 0 and self.rect.bottom > self.screen_height:
-            self.rect.move_ip(0, -self.screen_width)
+            self.y_pos = self.y_pos - self.screen_height
 
         if self.y_velocity < 0 and self.rect.top < 0:
-            self.rect.move_ip(0, self.screen_width)
+            self.y_pos = self.y_pos + self.screen_height
