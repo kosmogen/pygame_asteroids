@@ -3,6 +3,7 @@ import pygame
 import sys
 from pygame.locals import *
 from Ship import Ship
+from Asteroid import Asteroid
 
 if __name__ == '__main__':
     FPS = 60
@@ -16,6 +17,9 @@ if __name__ == '__main__':
     # fixed sprites
     player_ship = Ship(*WINDOW_RES)
     player_ship.update()
+
+    # Test asteroid
+    test_asteroid = Asteroid(200, 200, 30)
 
     # main loop
     while True:
@@ -31,6 +35,7 @@ if __name__ == '__main__':
         player_ship.update_sprite()
         DISPLAYSURF.fill(BG_COLOR)
         player_ship.draw(DISPLAYSURF)
+        test_asteroid.draw(DISPLAYSURF)
 
         pygame.display.update()
         FramePerSec.tick(FPS)
