@@ -6,6 +6,13 @@ from pygame.locals import *
 from Ship import Ship
 from Asteroid import Asteroid
 
+def death_screen(surface):
+    surface.fill((0, 255, 0))
+    pygame.display.update()
+    time.sleep(2)
+    pygame.quit()
+    sys.exit()
+
 if __name__ == '__main__':
     FPS = 60
     WINDOW_RES = (640, 480)
@@ -34,10 +41,11 @@ if __name__ == '__main__':
                 sys.exit()
 
         # Update sprites
-        player_ship.update_keys()
+        player_ship.update()
+        for asteroid in asteroids:
+            asteroid.update()
 
         # Draw sprites
-        player_ship.update_sprite()
         DISPLAYSURF.fill(BG_COLOR)
         player_ship.draw(DISPLAYSURF)
         for asteroid in asteroids:
@@ -45,11 +53,7 @@ if __name__ == '__main__':
 
         # Detect collision between player and any asteroids
         if pygame.sprite.spritecollideany(player_ship, asteroids):
-            DISPLAYSURF.fill(RED)
-            pygame.display.update()
-            time.sleep(2)
-            pygame.quit()
-            sys.exit()
+            death_screen(DISPLAYSURF)
 
         pygame.display.update()
         FramePerSec.tick(FPS)

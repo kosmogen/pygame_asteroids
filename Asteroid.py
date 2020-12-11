@@ -20,3 +20,6 @@ class Asteroid(pygame.sprite.Sprite):
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+
+    def update(self):
+        pass
