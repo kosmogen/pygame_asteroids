@@ -6,54 +6,62 @@ from pygame.locals import *
 from Ship import Ship
 from Asteroid import Asteroid
 
-def death_screen(surface):
-    surface.fill((0, 255, 0))
-    pygame.display.update()
-    time.sleep(2)
-    pygame.quit()
-    sys.exit()
+class AsteroidsGame:
+    """Contains all the variables and methods for running the main game loop."""
+    def __init__(self):
+        self.FPS = 60
+        self.WINDOW_RES = (640, 480)
+        self.BG_COLOR = (0, 0, 0) # RGB for black
+
+        pygame.init()
+        self.FramePerSec = pygame.time.Clock()
+        self.DISPLAYSURF = pygame.display.set_mode(self.WINDOW_RES)
+
+    def death_screen(self):
+        """Renders the death screen when a player collides with an asteroid."""
+        self.DISPLAYSURF.fill((0, 255, 0))
+        pygame.display.update()
+        time.sleep(2)
+        pygame.quit()
+        sys.exit()
+
+    def game_loop(self):
+        """Main game loop."""
+        # fixed sprites
+        self.player_ship = Ship(*self.WINDOW_RES)
+        self.player_ship.update()
+
+        # Test asteroid
+        self.asteroids = pygame.sprite.Group()
+        self.test_asteroid = Asteroid(100, 100, 20)
+
+        self.asteroids.add(self.test_asteroid)
+
+        # main loop
+        while True:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            # Update sprites
+            self.player_ship.update()
+            for asteroid in self.asteroids:
+                asteroid.update()
+
+            # Draw sprites
+            self.DISPLAYSURF.fill(self.BG_COLOR)
+            self.player_ship.draw(self.DISPLAYSURF)
+            for asteroid in self.asteroids:
+                asteroid.draw(self.DISPLAYSURF)
+
+            # Detect collision between player and any asteroids
+            if pygame.sprite.spritecollideany(self.player_ship, self.asteroids):
+                self.death_screen()
+
+            pygame.display.update()
+            self.FramePerSec.tick(self.FPS)
 
 if __name__ == '__main__':
-    FPS = 60
-    WINDOW_RES = (640, 480)
-    BG_COLOR = (0, 0, 0) # RGB for black
-    RED = (255, 0, 0)
-
-    pygame.init()
-    FramePerSec = pygame.time.Clock()
-    DISPLAYSURF = pygame.display.set_mode(WINDOW_RES)
-
-    # fixed sprites
-    player_ship = Ship(*WINDOW_RES)
-    player_ship.update()
-
-    # Test asteroid
-    asteroids = pygame.sprite.Group()
-    test_asteroid = Asteroid(100, 100, 20)
-
-    asteroids.add(test_asteroid)
-
-    # main loop
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-
-        # Update sprites
-        player_ship.update()
-        for asteroid in asteroids:
-            asteroid.update()
-
-        # Draw sprites
-        DISPLAYSURF.fill(BG_COLOR)
-        player_ship.draw(DISPLAYSURF)
-        for asteroid in asteroids:
-            asteroid.draw(DISPLAYSURF)
-
-        # Detect collision between player and any asteroids
-        if pygame.sprite.spritecollideany(player_ship, asteroids):
-            death_screen(DISPLAYSURF)
-
-        pygame.display.update()
-        FramePerSec.tick(FPS)
+    game = AsteroidsGame()
+    game.game_loop()
