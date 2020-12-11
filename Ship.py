@@ -22,9 +22,11 @@ class Ship(pygame.sprite.Sprite):
         self.display_image = pygame.transform.rotate(self.image, self.angle)
 
         self.rect = self.display_image.get_rect()
+        self.rect.centerx = self.x_pos
+        self.rect.centery = self.y_pos
 
     def draw(self, surface):
-        surface.blit(self.display_image, (self.x_pos, self.y_pos)) 
+        surface.blit(self.display_image, self.rect) 
 
     def update_keys(self):
         pressed_keys = pygame.key.get_pressed()
@@ -47,6 +49,9 @@ class Ship(pygame.sprite.Sprite):
             self.display_image = pygame.transform.rotate(self.image, self.angle)
             self.rect = self.display_image.get_rect()
 
+        # self.rect.centerx = self.x_pos
+        # self.rect.centery = self.y_pos
+
     def update_sprite(self):
         # Update sprite position
         self.x_pos = self.x_pos + self.x_velocity
@@ -64,3 +69,6 @@ class Ship(pygame.sprite.Sprite):
 
         if self.y_velocity < 0 and self.y_pos + 25 < 0:
             self.y_pos = self.y_pos + self.screen_height
+
+        self.rect.centerx = self.x_pos
+        self.rect.centery = self.y_pos
