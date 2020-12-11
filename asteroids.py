@@ -1,5 +1,6 @@
 """ Main file of asteroids."""
 import pygame
+from random import *
 import sys
 import time
 from pygame.locals import *
@@ -31,11 +32,17 @@ class AsteroidsGame:
         self.player_ship = Ship(*self.WINDOW_RES)
         self.player_ship.update()
 
-        # Test asteroid
+        # Initial asteroids
         self.asteroids = pygame.sprite.Group()
-        self.test_asteroid = Asteroid(100, 100, 20)
 
-        self.asteroids.add(self.test_asteroid)
+        for i in range(0, 10):
+            x_offset = randint(50, 300)
+            y_offset = randint(50, 200)
+            x_offset = choice([x_offset, -x_offset])
+            y_offset = choice([y_offset, -y_offset])
+
+            asteroid = Asteroid(self.player_ship.x_pos + x_offset, self.player_ship.y_pos + y_offset, 10)
+            self.asteroids.add(asteroid)
 
         # main loop
         while True:
