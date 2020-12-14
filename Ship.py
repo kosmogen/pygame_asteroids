@@ -5,14 +5,12 @@ from pygame.locals import *
 class Ship(pygame.sprite.Sprite):
     """Represents the player's ship in asteroids."""
     def __init__(self, screen_width, screen_height):
+        """Constructor for Model class.
+        Arguments:
+            screen_width: the width of the surface to blit to in pixels
+            screen_height: the height of the surface to blit to in pixels
+        """
         super().__init__()
-
-        # self.image = pygame.Surface([50, 50])
-        # self.image.fill((0, 0, 0))
-        # self.image.set_colorkey((0, 0, 0))
-        # pygame.draw.line(self.image, (0, 255, 0), (1, 1), (49, 25))
-        # pygame.draw.line(self.image, (0, 255, 0), (49, 25), (1, 49))
-        # pygame.draw.line(self.image, (0, 255, 0), (1, 1), (1, 49))
 
         self.image = pygame.image.load('player_ship.png')
         

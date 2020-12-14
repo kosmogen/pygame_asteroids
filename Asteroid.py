@@ -5,6 +5,11 @@ from pygame.locals import *
 class Asteroid(pygame.sprite.Sprite):
     """Represents an initially static rock in space."""
     def __init__(self, x_pos, y_pos, radius):
+        """Constructor for Asteroid class
+        Arguments:
+            x_pos: the center x point to create an asteroid from
+            y_pos: the cetner y point to create an asteroid from
+        """
         super().__init__() 
 
         self.image = pygame.Surface([radius*2, radius*2])
