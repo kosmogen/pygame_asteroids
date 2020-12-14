@@ -63,7 +63,7 @@ class AsteroidsGame:
                 asteroid.draw(self.DISPLAYSURF)
 
             # Detect collision between player and any asteroids
-            if pygame.sprite.spritecollideany(self.player_ship, self.asteroids):
+            if pygame.sprite.spritecollideany(self.player_ship, self.asteroids, pygame.sprite.collide_mask):
                 self.death_screen()
 
             pygame.display.update()
