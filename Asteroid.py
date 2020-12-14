@@ -4,11 +4,12 @@ from pygame.locals import *
 
 class Asteroid(pygame.sprite.Sprite):
     """Represents an initially static rock in space."""
-    def __init__(self, x_pos, y_pos, radius):
+    def __init__(self, x_pos, y_pos, radius=10):
         """Constructor for Asteroid class
         Arguments:
             x_pos: the center x point to create an asteroid from
             y_pos: the cetner y point to create an asteroid from
+            radius: the radius of the asteroid in pixels (Optional, defaults to 10)
         """
         super().__init__() 
 
