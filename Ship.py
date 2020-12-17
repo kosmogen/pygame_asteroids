@@ -1,11 +1,11 @@
 import pygame
 import math
 from pygame.locals import *
-from Bullet import Bullet
+from BaseGun import BaseGun
 
 class Ship(pygame.sprite.Sprite):
     """Represents the player's ship in asteroids."""
-    def __init__(self, screen_width, screen_height, bullets_group: pygame.sprite.Group):
+    def __init__(self, screen_width, screen_height, bullets: pygame.sprite.Group):
         """Constructor for Model class.
         Arguments:
             screen_width: the width of the surface to blit to in pixels
@@ -13,7 +13,7 @@ class Ship(pygame.sprite.Sprite):
         """
         super().__init__()
 
-        self.bullets_group = bullets_group
+        self.bullets_group = bullets
         self.image = pygame.image.load('player_ship.png')
         
         self.mask = pygame.mask.from_surface(self.image)
@@ -30,6 +30,7 @@ class Ship(pygame.sprite.Sprite):
         self.rect = self.display_image.get_rect()
         self.rect.centerx = self.x_pos
         self.rect.centery = self.y_pos
+        self.gun = BaseGun(self.screen_width, self.screen_height, bullets)
 
     def draw(self, surface):
         surface.blit(self.display_image, self.rect)
@@ -55,9 +56,7 @@ class Ship(pygame.sprite.Sprite):
             self.display_image = pygame.transform.rotate(self.image, self.angle)
             self.rect = self.display_image.get_rect()
         if pressed_keys[K_SPACE]:
-            bullet = Bullet(self.x_pos, self.y_pos, self.angle, self.x_velocity, self.y_velocity, 
-                            self.screen_width, self.screen_height)
-            self.bullets_group.add(bullet)
+            self.gun.fire(self.x_pos, self.y_pos, self.angle, self.x_velocity, self.y_velocity)
 
         # Update sprite position
         self.x_pos = self.x_pos + self.x_velocity
