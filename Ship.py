@@ -16,8 +16,6 @@ class Ship(pygame.sprite.Sprite):
         self.bullets_group = bullets
         self.image = pygame.image.load('player_ship.png')
         
-        self.mask = pygame.mask.from_surface(self.image)
-
         self.x_pos = screen_width/2 - 25
         self.y_pos = screen_height/2 - 25
         self.y_velocity = 0
@@ -26,6 +24,7 @@ class Ship(pygame.sprite.Sprite):
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.display_image = pygame.transform.rotate(self.image, self.angle)
+        self.mask = pygame.mask.from_surface(self.display_image)
 
         self.rect = self.display_image.get_rect()
         self.rect.centerx = self.x_pos
@@ -51,12 +50,16 @@ class Ship(pygame.sprite.Sprite):
             self.angle = self.angle + 4
             self.display_image = pygame.transform.rotate(self.image, self.angle)
             self.rect = self.display_image.get_rect()
+            self.mask = pygame.mask.from_surface(self.display_image)
         if pressed_keys[K_RIGHT]:
             self.angle = self.angle - 4
             self.display_image = pygame.transform.rotate(self.image, self.angle)
             self.rect = self.display_image.get_rect()
+            self.mask = pygame.mask.from_surface(self.display_image)
         if pressed_keys[K_SPACE]:
-            self.gun.fire(self.x_pos, self.y_pos, self.angle, self.x_velocity, self.y_velocity)
+            self.gun.fire(self.x_pos + 25 * math.cos(math.radians(self.angle)), 
+                        self.y_pos - 25 * math.sin(math.radians(self.angle)), 
+                        self.angle, self.x_velocity, self.y_velocity)
 
         # Update sprite position
         self.x_pos = self.x_pos + self.x_velocity

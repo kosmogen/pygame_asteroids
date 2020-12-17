@@ -13,16 +13,16 @@ class Bullet(pygame.sprite.Sprite):
         self.screen_width = screen_width
         self.screen_height = screen_height
 
-        self.image = pygame.surface.Surface((8, 12))
-        pygame.draw.rect(self.image, (0, 255, 0), pygame.Rect(0, 0, 8, 12))
-        pygame.image = pygame.transform.rotate(self.image, start_angle)
-        self.mask = pygame.mask.from_surface(self.image)
+        self.image = pygame.surface.Surface((12, 4))
+        pygame.draw.rect(self.image, (0, 255, 0), pygame.Rect(0, 0, 12, 4))
+        self.display_image = pygame.transform.rotate(self.image, start_angle)
+        self.mask = pygame.mask.from_surface(self.display_image)
         self.rect = self.image.get_rect()
         self.rect.centerx = start_x
         self.rect.centery = start_y
 
     def draw(self, surface):
-        surface.blit(self.image, self.rect)
+        surface.blit(self.display_image, self.rect)
 
     def update(self):
         # Update sprite position
