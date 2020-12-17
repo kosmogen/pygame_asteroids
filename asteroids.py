@@ -86,7 +86,7 @@ class AsteroidsGame:
         self.asteroids = pygame.sprite.Group()
         self.asteroid_emitters = []
 
-        for _ in range(0, 8):
+        for _ in range(0, 10):
             aster_x, aster_y = self.random_offset_from_ship()
 
             asteroid = Asteroid(aster_x, aster_y)
@@ -110,11 +110,12 @@ class AsteroidsGame:
 
     def death_screen(self) -> str:
         """Renders the death screen when a player collides with an asteroid."""
-        self.DISPLAYSURF.fill((0, 255, 0))
-        pygame.display.update()
-        text = self.TITLE_FONT.render('Game Over', True, (0, 0, 0))
-        textRect = text.get_rect().center = (0, 0)
+        pygame.draw.rect(self.DISPLAYSURF, (0, 255, 0), pygame.Rect(self.WINDOW_RES[0]/2 - 110, self.WINDOW_RES[1] - 40, 180, 40))
+        pygame.draw.rect(self.DISPLAYSURF, (0, 0, 0), pygame.Rect(self.WINDOW_RES[0]/2 - 106, self.WINDOW_RES[1] - 36, 172, 32))
+        text = self.TITLE_FONT.render('Game Over', True, (0, 255, 0))
+        textRect = text.get_rect().center = (self.WINDOW_RES[0]/2 - 70, self.WINDOW_RES[1] - 30)
         self.DISPLAYSURF.blit(text, textRect)
+        pygame.display.update()
 
         return 'wait'
 

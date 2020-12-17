@@ -81,19 +81,19 @@ class Ship(pygame.sprite.Sprite):
 
         # Update velocity and atitude from keypresses
         if pressed_keys[K_UP]:
-            self.y_velocity = self.y_velocity - 0.25 * math.sin(math.radians(self.angle))
-            self.x_velocity = self.x_velocity + 0.25 * math.cos(math.radians(self.angle))
+            self.y_velocity = self.y_velocity - 0.33 * math.sin(math.radians(self.angle))
+            self.x_velocity = self.x_velocity + 0.33 * math.cos(math.radians(self.angle))
             pass
         if pressed_keys[K_DOWN]:
-            self.y_velocity = self.y_velocity + 0.25 * math.sin(math.radians(self.angle))
-            self.x_velocity = self.x_velocity - 0.25 * math.cos(math.radians(self.angle))
+            self.y_velocity = self.y_velocity + 0.33 * math.sin(math.radians(self.angle))
+            self.x_velocity = self.x_velocity - 0.33 * math.cos(math.radians(self.angle))
             pass
         if pressed_keys[K_LEFT]:
-            self.angle = self.angle + 1
+            self.angle = self.angle + 4
             self.display_image = pygame.transform.rotate(self.image, self.angle)
             self.rect = self.display_image.get_rect()
         if pressed_keys[K_RIGHT]:
-            self.angle = self.angle - 1
+            self.angle = self.angle - 4
             self.display_image = pygame.transform.rotate(self.image, self.angle)
             self.rect = self.display_image.get_rect()
         if pressed_keys[K_SPACE]:

@@ -5,7 +5,7 @@ from Asteroid import Asteroid
 
 class AsteroidEmitter():
     """Emites an asteroid on a predefined interval."""
-    def __init__(self, screen_width, screen_height, asteroids, random_xy_func, emit_time_in_sec = 1):
+    def __init__(self, screen_width, screen_height, asteroids, random_xy_func, max_asteroids = 5, emit_time_in_sec = 2):
         """Constructor for AsteroidEmitter class
         Arguments:
             screen_width: the width of the surface to blit to in pixels
@@ -15,6 +15,7 @@ class AsteroidEmitter():
         """
         self.last_emit_time = time.time()
         self.emit_time_in_sec = emit_time_in_sec
+        self.max_asteroids = max_asteroids
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.asteroids = asteroids
@@ -26,6 +27,6 @@ class AsteroidEmitter():
         self.asteroids.add(particle)
 
     def update(self):
-        if time.time() - self.last_emit_time > self.emit_time_in_sec and len(self.asteroids) < 10:
+        if time.time() - self.last_emit_time > self.emit_time_in_sec and len(self.asteroids) < self.max_asteroids:
             self._emit()
             self.last_emit_time = time.time()
