@@ -45,6 +45,8 @@ class AsteroidsGame:
 
         # Update sprites
         self.player_ship.update()
+        for bullet in self.bullets:
+            bullet.update()
         for asteroid in self.asteroids:
             asteroid.update()
         for emitter in self.asteroid_emitters:
@@ -55,9 +57,14 @@ class AsteroidsGame:
         self.player_ship.draw(self.DISPLAYSURF)
         for asteroid in self.asteroids:
             asteroid.draw(self.DISPLAYSURF)
+        for bullet in self.bullets:
+            bullet.draw(self.DISPLAYSURF)
 
         pygame.display.update()
         self.FramePerSec.tick(self.FPS)
+
+        # Detect collisions between bullets and asteroids and remove colliding sprites
+        pygame.sprite.groupcollide(self.bullets, self.asteroids, True, True, pygame.sprite.collide_mask)
 
         # Detect collision between player and any asteroids
         if pygame.sprite.spritecollideany(self.player_ship, self.asteroids, pygame.sprite.collide_mask):
@@ -68,8 +75,11 @@ class AsteroidsGame:
     #region Game States
     def start_game(self) -> str:
         """Resets the game field and draws the initial game back at level 1."""
-        # fixed sprites
-        self.player_ship = Ship(*self.WINDOW_RES)
+        # Initial empty group for bullets
+        self.bullets = pygame.sprite.Group()
+
+        # Player ship
+        self.player_ship = Ship(*self.WINDOW_RES, self.bullets)
         self.player_ship.update()
 
         # Initial asteroids
