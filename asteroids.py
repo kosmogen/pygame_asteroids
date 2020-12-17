@@ -110,8 +110,10 @@ class AsteroidsGame:
 
     def death_screen(self) -> str:
         """Renders the death screen when a player collides with an asteroid."""
-        pygame.draw.rect(self.DISPLAYSURF, (0, 255, 0), pygame.Rect(self.WINDOW_RES[0]/2 - 110, self.WINDOW_RES[1] - 40, 180, 40))
-        pygame.draw.rect(self.DISPLAYSURF, (0, 0, 0), pygame.Rect(self.WINDOW_RES[0]/2 - 106, self.WINDOW_RES[1] - 36, 172, 32))
+        pygame.draw.rect(self.DISPLAYSURF, (0, 255, 0), pygame.Rect(self.WINDOW_RES[0]/2 - 110, 
+                                                                    self.WINDOW_RES[1] - 40, 180, 40))
+        pygame.draw.rect(self.DISPLAYSURF, (0, 0, 0), pygame.Rect(self.WINDOW_RES[0]/2 - 106, 
+                                                                    self.WINDOW_RES[1] - 36, 172, 32))
         text = self.TITLE_FONT.render('Game Over', True, (0, 255, 0))
         textRect = text.get_rect().center = (self.WINDOW_RES[0]/2 - 70, self.WINDOW_RES[1] - 30)
         self.DISPLAYSURF.blit(text, textRect)
@@ -130,7 +132,6 @@ class AsteroidsGame:
             current_func = getattr(self, str(self.CURRENT_STATE))
             self.CURRENT_STATE = current_func()
             
-
 if __name__ == '__main__':
     game = AsteroidsGame()
     game.game_loop()
