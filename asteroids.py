@@ -26,7 +26,16 @@ class AsteroidsGame:
         self.DISPLAYSURF = pygame.display.set_mode(self.WINDOW_RES)
         pygame.display.set_caption('Asteroids')
         self.TITLE_FONT = pygame.font.SysFont('FreeMono', 20, bold=True)
-        logging.basicConfig(filename='asteroids.log', level=logging.INFO)
+        
+        self.logger = logging.getLogger('asteroids_game')
+        self.logger.setLevel(logging.INFO)
+
+        file_handler = logging.FileHandler('asteroids.log', mode='w')
+        file_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(asctime)s - %(module)s - %(message)s')
+        file_handler.setFormatter(formatter)
+
+        self.logger.addHandler(file_handler)
 
     def random_offset_from_ship(self):
         x_offset = randint(self.MIN_SPAWN_DIST, self.WINDOW_RES[0]/2 - self.MIN_SPAWN_DIST)
@@ -152,14 +161,14 @@ class AsteroidsGame:
 
     def game_loop(self):
         """Main game loop."""
-        logging.info('Initial state: %s', self.CURRENT_STATE)
+        self.logger.info('Initial state: %s', self.CURRENT_STATE)
 
         while True:
             current_func = getattr(self, str(self.CURRENT_STATE))
             next_state = current_func()
 
             if self.CURRENT_STATE != next_state:
-                logging.info('Changing from state %s to state %s', self.CURRENT_STATE, next_state)
+                self.logger.info('Changing from state %s to state %s', self.CURRENT_STATE, next_state)
                 self.STATE_CHANGE_TIME = time.time()
                 self.CURRENT_STATE = next_state
             
