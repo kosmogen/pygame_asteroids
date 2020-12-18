@@ -1,9 +1,10 @@
 """ Main file of asteroids."""
 import pygame
+from pygame.locals import *
 from random import *
 import sys
 import time
-from pygame.locals import *
+
 from Ship import Ship
 from Asteroid import Asteroid
 from AsteroidEmitter import AsteroidEmitter
@@ -16,6 +17,8 @@ class AsteroidsGame:
         self.BG_COLOR = (0, 0, 0) # RGB for black
         self.MIN_SPAWN_DIST = 50 # Minimum distance from ship for asteroids to spawn (in pixels)
         self.CURRENT_STATE = 'start_game'
+        self.STATE_CHANGE_TIME = time.time()
+        self.LEVEL_TIMER_IN_SEC = 10
 
         pygame.init()
         self.FramePerSec = pygame.time.Clock()
@@ -56,7 +59,7 @@ class AsteroidsGame:
         self.DISPLAYSURF.fill(self.BG_COLOR)
         self.player_ship.draw(self.DISPLAYSURF)
         for asteroid in self.asteroids:
-            asteroid.draw(self.DISPLAYSURF)
+            asteroid.draw()
         for bullet in self.bullets:
             bullet.draw(self.DISPLAYSURF)
 
@@ -89,11 +92,11 @@ class AsteroidsGame:
         for _ in range(0, 10):
             aster_x, aster_y = self.random_offset_from_ship()
 
-            asteroid = Asteroid(aster_x, aster_y)
+            asteroid = Asteroid(aster_x, aster_y, self.DISPLAYSURF)
             self.asteroids.add(asteroid)
 
         # Initial asteroid emitter
-        emitter = AsteroidEmitter(*self.WINDOW_RES, self.asteroids, self.random_offset_from_ship)
+        emitter = AsteroidEmitter(self.asteroids, self.DISPLAYSURF, self.random_offset_from_ship)
         self.asteroid_emitters.append(emitter)
 
         return 'level_1'
@@ -103,10 +106,29 @@ class AsteroidsGame:
 
         hit_asteroid = False
 
-        while not hit_asteroid:
+        while not hit_asteroid and time.time() - self.STATE_CHANGE_TIME < self.LEVEL_TIMER_IN_SEC:
             hit_asteroid = self.tick()
 
-        return 'death_screen'
+        return 'death_screen' if hit_asteroid else 'level_2'
+
+    def level_2(self) -> str:
+        """Animates the second difficulty level of the game."""
+
+        already_in_motion = False
+        for emitter in self.asteroid_emitters:
+            already_in_motion = already_in_motion or emitter.asteroids_in_motion
+            emitter.asteroids_in_motion = True
+        
+        if not already_in_motion:
+            for asteroid in self.asteroids:
+                asteroid.random_nudge()
+
+        hit_asteroid = False
+
+        while not hit_asteroid and time.time() - self.STATE_CHANGE_TIME < self.LEVEL_TIMER_IN_SEC:
+            hit_asteroid = self.tick()
+
+        return 'death_screen' if hit_asteroid else 'level_2'
 
     def death_screen(self) -> str:
         """Renders the death screen when a player collides with an asteroid."""
@@ -130,7 +152,11 @@ class AsteroidsGame:
         """Main game loop."""
         while True:
             current_func = getattr(self, str(self.CURRENT_STATE))
-            self.CURRENT_STATE = current_func()
+            next_state = current_func()
+
+            if self.CURRENT_STATE != next_state:
+                self.STATE_CHANGE_TIME = time.time()
+                self.CURRENT_STATE = next_state
             
 if __name__ == '__main__':
     game = AsteroidsGame()
