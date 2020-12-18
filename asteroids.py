@@ -4,6 +4,7 @@ from pygame.locals import *
 from random import *
 import sys
 import time
+import logging
 
 from Ship import Ship
 from Asteroid import Asteroid
@@ -25,6 +26,7 @@ class AsteroidsGame:
         self.DISPLAYSURF = pygame.display.set_mode(self.WINDOW_RES)
         pygame.display.set_caption('Asteroids')
         self.TITLE_FONT = pygame.font.SysFont('FreeMono', 20, bold=True)
+        logging.basicConfig(filename='asteroids.log', level=logging.INFO)
 
     def random_offset_from_ship(self):
         x_offset = randint(self.MIN_SPAWN_DIST, self.WINDOW_RES[0]/2 - self.MIN_SPAWN_DIST)
@@ -150,11 +152,14 @@ class AsteroidsGame:
 
     def game_loop(self):
         """Main game loop."""
+        logging.info('Initial state: %s', self.CURRENT_STATE)
+
         while True:
             current_func = getattr(self, str(self.CURRENT_STATE))
             next_state = current_func()
 
             if self.CURRENT_STATE != next_state:
+                logging.info('Changing from state %s to state %s', self.CURRENT_STATE, next_state)
                 self.STATE_CHANGE_TIME = time.time()
                 self.CURRENT_STATE = next_state
             
