@@ -1,10 +1,11 @@
 """ Main file of asteroids."""
 import pygame
-from pygame.locals import *
-from random import *
+from pygame.locals import QUIT
+from random import randint, choice
 import sys
 import time
 import logging
+import threading 
 
 from Ship import Ship
 from Asteroid import Asteroid
@@ -16,6 +17,7 @@ class AsteroidsGame:
         self.FPS = 30
         self.WINDOW_RES = (640, 480)
         self.BG_COLOR = (0, 0, 0) # RGB for black
+        self.FG_COLOR = (0, 255, 0) # RGB for green
         self.MIN_SPAWN_DIST = 50 # Minimum distance from ship for asteroids to spawn (in pixels)
         self.CURRENT_STATE = 'start_game'
         self.STATE_CHANGE_TIME = time.time()
@@ -26,7 +28,7 @@ class AsteroidsGame:
         self.DISPLAYSURF = pygame.display.set_mode(self.WINDOW_RES)
         pygame.display.set_caption('Asteroids')
         self.TITLE_FONT = pygame.font.SysFont('FreeMono', 20, bold=True)
-        
+
         self.logger = logging.getLogger('asteroids_game')
         self.logger.setLevel(logging.INFO)
 
@@ -36,6 +38,7 @@ class AsteroidsGame:
         file_handler.setFormatter(formatter)
 
         self.logger.addHandler(file_handler)
+        threading.Thread(target=self.tick, args=(self))
 
     def random_offset_from_ship(self):
         x_offset = randint(self.MIN_SPAWN_DIST, self.WINDOW_RES[0]/2 - self.MIN_SPAWN_DIST)
@@ -44,6 +47,16 @@ class AsteroidsGame:
         y_offset = choice([y_offset, -y_offset]) + self.player_ship.y_pos
 
         return (x_offset, y_offset)
+
+    def show_text_box(self, text):
+        pygame.draw.rect(self.DISPLAYSURF, self.FG_COLOR, pygame.Rect(self.WINDOW_RES[0]/2 - 110, 
+                                                                    self.WINDOW_RES[1] - 40, 180, 40))
+        pygame.draw.rect(self.DISPLAYSURF, self.BG_COLOR, pygame.Rect(self.WINDOW_RES[0]/2 - 106, 
+                                                                    self.WINDOW_RES[1] - 36, 172, 32))
+        text = self.TITLE_FONT.render(text, True, self.FG_COLOR)
+        textRect = text.get_rect().center = (self.WINDOW_RES[0]/2 - 70, self.WINDOW_RES[1] - 30)
+        self.DISPLAYSURF.blit(text, textRect)
+        pygame.display.update()
 
     def tick(self) -> bool:
         """Processes one round of updates and drawing for existing sprites.
@@ -66,6 +79,19 @@ class AsteroidsGame:
         for emitter in self.asteroid_emitters:
             emitter.update()
 
+        self.draw_thread()
+
+        # Detect collisions between bullets and asteroids and remove colliding sprites
+        pygame.sprite.groupcollide(self.bullets, self.asteroids, True, True, pygame.sprite.collide_mask)
+
+        # Detect collision between player and any asteroids
+        if pygame.sprite.spritecollideany(self.player_ship, self.asteroids, pygame.sprite.collide_mask):
+            return True
+        
+        return False
+
+    def draw_thread(self):
+        """Draws sprites to surface."""
         # Draw sprites
         self.DISPLAYSURF.fill(self.BG_COLOR)
         self.player_ship.draw(self.DISPLAYSURF)
@@ -76,15 +102,6 @@ class AsteroidsGame:
 
         pygame.display.update()
         self.FramePerSec.tick(self.FPS)
-
-        # Detect collisions between bullets and asteroids and remove colliding sprites
-        pygame.sprite.groupcollide(self.bullets, self.asteroids, True, True, pygame.sprite.collide_mask)
-
-        # Detect collision between player and any asteroids
-        if pygame.sprite.spritecollideany(self.player_ship, self.asteroids, pygame.sprite.collide_mask):
-            return True
-        
-        return False
 
     #region Game States
     def start_game(self) -> str:
@@ -115,12 +132,16 @@ class AsteroidsGame:
     def level_1(self) -> str:
         """Animates the first difficulty level of the game."""
 
-        hit_asteroid = False
+        next_level = 'level_1'
 
-        while not hit_asteroid and time.time() - self.STATE_CHANGE_TIME < self.LEVEL_TIMER_IN_SEC:
-            hit_asteroid = self.tick()
+        if time.time() - self.STATE_CHANGE_TIME < 1.5:
+            self.show_text_box('Level 1')
 
-        return 'death_screen' if hit_asteroid else 'level_2'
+        if time.time() - self.STATE_CHANGE_TIME > self.LEVEL_TIMER_IN_SEC:
+            next_level = 'level_2'
+            
+        hit_asteroid = self.tick()
+        return 'death_screen' if hit_asteroid else next_level
 
     def level_2(self) -> str:
         """Animates the second difficulty level of the game."""
@@ -134,23 +155,22 @@ class AsteroidsGame:
             for asteroid in self.asteroids:
                 asteroid.random_nudge()
 
-        hit_asteroid = False
 
-        while not hit_asteroid and time.time() - self.STATE_CHANGE_TIME < self.LEVEL_TIMER_IN_SEC:
-            hit_asteroid = self.tick()
+        next_level = 'level_2'
 
-        return 'death_screen' if hit_asteroid else 'level_2'
+        if time.time() - self.STATE_CHANGE_TIME < 1.5:
+            self.show_text_box('Level 2')
+
+        if time.time() - self.STATE_CHANGE_TIME > self.LEVEL_TIMER_IN_SEC:
+            next_level = 'level_2'
+
+        hit_asteroid = self.tick()
+
+        return 'death_screen' if hit_asteroid else next_level
 
     def death_screen(self) -> str:
         """Renders the death screen when a player collides with an asteroid."""
-        pygame.draw.rect(self.DISPLAYSURF, (0, 255, 0), pygame.Rect(self.WINDOW_RES[0]/2 - 110, 
-                                                                    self.WINDOW_RES[1] - 40, 180, 40))
-        pygame.draw.rect(self.DISPLAYSURF, (0, 0, 0), pygame.Rect(self.WINDOW_RES[0]/2 - 106, 
-                                                                    self.WINDOW_RES[1] - 36, 172, 32))
-        text = self.TITLE_FONT.render('Game Over', True, (0, 255, 0))
-        textRect = text.get_rect().center = (self.WINDOW_RES[0]/2 - 70, self.WINDOW_RES[1] - 30)
-        self.DISPLAYSURF.blit(text, textRect)
-        pygame.display.update()
+        self.show_text_box('Game over')
 
         return 'wait'
 
@@ -171,6 +191,8 @@ class AsteroidsGame:
                 self.logger.info('Changing from state %s to state %s', self.CURRENT_STATE, next_state)
                 self.STATE_CHANGE_TIME = time.time()
                 self.CURRENT_STATE = next_state
+        
+        self.logger.info('Exited the loop somehow')
             
 if __name__ == '__main__':
     game = AsteroidsGame()
